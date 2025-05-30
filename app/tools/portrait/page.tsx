@@ -35,10 +35,10 @@ const allExamplePrompts = [
 
 // 示例作品缩略图
 const exampleThumbnails = [
-  "/images/tools/portrait-example.jpg",
-  "/images/tools/portrait-example.jpg", 
-  "/placeholder.jpg",
-  "/placeholder.jpg"
+  "/images/tools/portrait-example-1.png",
+  "/images/tools/portrait-example-2.png", 
+  "/images/tools/portrait-example-3.png",
+  "/images/tools/portrait-example-4.png"
 ]
 
 export default function PortraitToolPage() {
@@ -675,7 +675,7 @@ export default function PortraitToolPage() {
                       {exampleThumbnails.map((thumbnail, index) => (
                         <div 
                           key={index}
-                          className="aspect-square rounded-xl overflow-hidden transition-all duration-300 hover:ring-2 hover:ring-yellow-300/40 cursor-pointer"
+                          className="aspect-square rounded-xl overflow-hidden transition-all duration-300 hover:ring-2 hover:ring-yellow-300/40 hover:scale-125 hover:z-10 hover:shadow-xl cursor-pointer"
                           style={{backgroundColor: '#FFFCF7'}}
                         >
                           <Image
