@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 
 export default function HomePage() {
+  // 控制Today's Spark模块显示/隐藏的常量
+  const SHOW_TODAYS_SPARK = false;
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 to-amber-50/30 relative">
       {/* Subtle decorative elements */}
@@ -102,6 +105,7 @@ export default function HomePage() {
           </div>
 
           {/* Today's Spark Preview */}
+          {SHOW_TODAYS_SPARK && (
           <div className="space-y-8">
             <div className="inline-block bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-3 border border-stone-100/50">
               <p className="text-stone-600 font-light tracking-wide">Today's spark is...</p>
@@ -123,6 +127,7 @@ export default function HomePage() {
               </Card>
             </Link>
           </div>
+          )}
         </div>
 
         {/* Zen Quote */}
