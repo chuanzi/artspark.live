@@ -12,7 +12,7 @@ export const toolsConfig: ToolConfig[] = [
     id: "portrait",
     name: "黑白肖像艺术",
     description: "生成电影风格的黑白艺术肖像",
-    exampleImage: "/images/tools/portrait-example.jpg",
+    exampleImage: "/images/tools/portrait-example-1.png",
     path: "/tools/portrait",
     emoji: "🎭"
   },
@@ -20,7 +20,7 @@ export const toolsConfig: ToolConfig[] = [
     id: "animal-landmark",
     name: "动物地标融合",
     description: "将动物与著名地标巧妙融合",
-    exampleImage: "/images/tools/animal-landmark-example.jpg", 
+    exampleImage: "/images/tools/animal-landmark-example-1.png", 
     path: "/tools/animal-landmark",
     emoji: "🦁"
   },

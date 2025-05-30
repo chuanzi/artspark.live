@@ -23,10 +23,10 @@ const recommendedCombinations = [
 
 // 示例作品缩略图
 const exampleThumbnails = [
-  "/images/tools/animal-landmark-example.jpg",
-  "/images/tools/animal-landmark-example.jpg", 
-  "/images/tools/animal-landmark-example.jpg",
-  "/images/tools/animal-landmark-example.jpg"
+  "/images/tools/animal-landmark-example-1.png",
+  "/images/tools/animal-landmark-example-2.png", 
+  "/images/tools/animal-landmark-example-3.png",
+  "/images/tools/animal-landmark-example-4.png"
 ]
 
 export default function AnimalLandmarkPage() {
