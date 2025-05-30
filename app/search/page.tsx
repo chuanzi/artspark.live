@@ -5,79 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Search } from "lucide-react"
-
-const allTools = [
-  {
-    id: "portrait",
-    name: "黑白肖像艺术",
-    description: "一键生成电影风格的黑白人物画",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["人物", "黑白", "艺术", "电影", "肖像"],
-    keywords: ["人物", "肖像", "黑白", "电影", "艺术", "经典"],
-    difficulty: "简单",
-    time: "30秒",
-    popularity: 4.8,
-    href: "/tools/portrait",
-    emoji: "🎭",
-    color: "stone",
-  },
-  {
-    id: "animal-landmark",
-    name: "动物地标自拍",
-    description: "拟人动物在世界各地地标自拍照",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["动物", "地标", "有趣", "自拍"],
-    keywords: ["动物", "地标", "自拍", "旅行", "有趣", "可爱"],
-    difficulty: "简单",
-    time: "45秒",
-    popularity: 4.9,
-    href: "/tools/animal-landmark",
-    emoji: "🦊",
-    color: "amber",
-  },
-  {
-    id: "treasure-map",
-    name: "古代藏宝图",
-    description: "上传地图图像 → 风格化成秘宝地图",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["地图", "古代", "冒险", "上传"],
-    keywords: ["地图", "古代", "冒险", "宝藏", "探险", "神秘"],
-    difficulty: "中等",
-    time: "60秒",
-    popularity: 4.6,
-    href: "/tools/treasure-map",
-    emoji: "🗺️",
-    color: "orange",
-  },
-  {
-    id: "half-illustration",
-    name: "Half Illustration",
-    description: "半风格化插画",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["插画", "现代", "创意", "风格化"],
-    keywords: ["插画", "现代", "创意", "艺术", "风格", "设计"],
-    difficulty: "中等",
-    time: "50秒",
-    popularity: 4.7,
-    href: "/tools/half-illustration",
-    emoji: "🖌️",
-    color: "slate",
-  },
-  {
-    id: "neo-impressionism",
-    name: "Neo-Impressionism",
-    description: "新印象派画风",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["印象派", "经典", "艺术", "绘画"],
-    keywords: ["印象派", "经典", "艺术", "绘画", "色彩", "笔触"],
-    difficulty: "简单",
-    time: "40秒",
-    popularity: 4.5,
-    href: "/tools/neo-impressionism",
-    emoji: "🎨",
-    color: "neutral",
-  },
-]
+import { toolsConfig } from "@/lib/tools-config"
 
 const popularKeywords = [
   "人物",
@@ -110,17 +38,17 @@ const getBgColor = (color: string) => {
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [filteredTools, setFilteredTools] = useState(allTools)
+  const [filteredTools, setFilteredTools] = useState(toolsConfig)
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
 
     if (!query.trim()) {
-      setFilteredTools(allTools)
+      setFilteredTools(toolsConfig)
       return
     }
 
-    const filtered = allTools.filter(
+    const filtered = toolsConfig.filter(
       (tool) =>
         tool.name.toLowerCase().includes(query.toLowerCase()) ||
         tool.description.toLowerCase().includes(query.toLowerCase()) ||
@@ -254,7 +182,7 @@ export default function SearchPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredTools.map((tool) => (
-                <Link key={tool.id} href={tool.href}>
+                <Link key={tool.id} href={tool.path}>
                   <div className="group">
                     <div
                       className={`relative ${getBgColor(tool.color)} backdrop-blur-sm border border-stone-200/50 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-700 ease-out hover:scale-[1.02]`}

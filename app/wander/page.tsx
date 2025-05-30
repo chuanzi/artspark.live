@@ -1,88 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-
-const tools = [
-  {
-    id: "portrait",
-    name: "黑白肖像艺术",
-    description: "一键生成电影风格的黑白人物画",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["人物", "黑白", "艺术"],
-    difficulty: "简单",
-    time: "30秒",
-    popularity: 4.8,
-    href: "/tools/portrait",
-    emoji: "🎭",
-    color: "stone",
-  },
-  {
-    id: "animal-landmark",
-    name: "动物地标自拍",
-    description: "拟人动物在世界各地地标自拍照",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["动物", "地标", "有趣"],
-    difficulty: "简单",
-    time: "45秒",
-    popularity: 4.9,
-    href: "/tools/animal-landmark",
-    emoji: "🦊",
-    color: "amber",
-  },
-  {
-    id: "treasure-map",
-    name: "古代藏宝图",
-    description: "上传地图图像 → 风格化成秘宝地图",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["地图", "古代", "冒险"],
-    difficulty: "中等",
-    time: "60秒",
-    popularity: 4.6,
-    href: "/tools/treasure-map",
-    emoji: "🗺️",
-    color: "orange",
-  },
-  {
-    id: "half-illustration",
-    name: "Half Illustration",
-    description: "半风格化插画",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["插画", "现代", "创意"],
-    difficulty: "中等",
-    time: "50秒",
-    popularity: 4.7,
-    href: "/tools/half-illustration",
-    emoji: "🖌️",
-    color: "slate",
-  },
-  {
-    id: "neo-impressionism",
-    name: "Neo-Impressionism",
-    description: "新印象派画风",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["印象派", "经典", "艺术"],
-    difficulty: "简单",
-    time: "40秒",
-    popularity: 4.5,
-    href: "/tools/neo-impressionism",
-    emoji: "🎨",
-    color: "neutral",
-  },
-  {
-    id: "coming-soon-1",
-    name: "梦境场景",
-    description: "即将推出 - 创造超现实梦境场景",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["梦境", "超现实", "即将推出"],
-    difficulty: "简单",
-    time: "35秒",
-    popularity: 0,
-    href: "#",
-    comingSoon: true,
-    emoji: "💭",
-    color: "zinc",
-  },
-]
+import { toolsConfig } from "@/lib/tools-config"
 
 const getBgColor = (color: string) => {
   const colors: Record<string, string> = {
@@ -150,8 +69,8 @@ export default function WanderPage() {
 
         {/* Tools Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-          {tools.map((tool) => (
-            <Link key={tool.id} href={tool.href}>
+          {toolsConfig.map((tool) => (
+            <Link key={tool.id} href={tool.path}>
               <div className="group">
                 <div
                   className={`relative ${getBgColor(tool.color)} backdrop-blur-sm border border-stone-200/50 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-700 ease-out hover:scale-[1.02]`}
@@ -203,15 +122,6 @@ export default function WanderPage() {
                         <span>⏱️</span>
                         <span>{tool.time}</span>
                       </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <Button
-                        className="bg-gradient-to-r from-stone-300 to-amber-300 hover:from-stone-400 hover:to-amber-400 text-stone-700 px-6 py-2 rounded-full font-light border-0 shadow-sm hover:shadow-md transition-all duration-500"
-                        disabled={tool.comingSoon}
-                      >
-                        {tool.comingSoon ? "敬请期待" : "开始创作"}
-                      </Button>
                     </div>
                   </div>
                 </div>
