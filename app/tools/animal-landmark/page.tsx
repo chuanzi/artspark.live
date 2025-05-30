@@ -587,8 +587,8 @@ export default function AnimalLandmarkPage() {
                     key={animal.id}
                     className={`p-4 border rounded-2xl transition-all duration-300 text-center ${
                       selectedAnimal?.id === animal.id
-                        ? getSelectedColorClass(animal.color) + " shadow-lg"
-                        : getBgColorClass(animal.color)
+                        ? "bg-white border-stone-400 shadow-lg"
+                        : "bg-white/80 border-stone-200/50 hover:bg-white hover:shadow-sm"
                     }`}
                     onClick={() => handleAnimalSelect(animal)}
                   >
@@ -649,8 +649,8 @@ export default function AnimalLandmarkPage() {
                     key={landmark.id}
                     className={`p-4 border rounded-2xl transition-all duration-300 ${
                       selectedLandmark?.id === landmark.id
-                        ? getSelectedColorClass(landmark.color) + " shadow-lg"
-                        : getBgColorClass(landmark.color)
+                        ? "bg-white border-stone-400 shadow-lg"
+                        : "bg-white/80 border-stone-200/50 hover:bg-white hover:shadow-sm"
                     }`}
                     onClick={() => handleLandmarkSelect(landmark)}
                   >
@@ -729,43 +729,18 @@ export default function AnimalLandmarkPage() {
 
               {/* Progress and Error Display */}
               {isGenerating && (
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-2xl p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full flex items-center justify-center">
-                        <span className="text-lg animate-pulse">📸</span>
-                      </div>
-                      <div>
-                        <p className="text-stone-700 font-light">
-                          {isRetrying ? "正在重试连接..." : "AI正在为动物们拍照..."}
-                        </p>
-                        <p className="text-sm text-stone-500 font-light">
-                          {isRetrying ? "请耐心等待，系统正在尝试重新连接" : "这可能需要1-2分钟"}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Progress Bar */}
-                    {progress > 0 && !isRetrying && (
-                      <div className="space-y-2">
-                        <div className="w-full bg-stone-200/50 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-amber-300 to-orange-300 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-sm text-stone-600 text-center font-light">{progress}%</p>
-                      </div>
-                    )}
-                    
-                    {/* Retry Indicator */}
-                    {isRetrying && (
-                      <div className="flex items-center justify-center gap-2 mt-4">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-300 border-t-transparent"></div>
-                        <span className="text-sm text-amber-600 font-light">重新连接中...</span>
-                      </div>
-                    )}
+                <div className="max-w-xs mx-auto">
+                  <div className="bg-stone-200/50 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-stone-400 to-amber-400 h-full transition-all duration-300 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
+                  <p className="text-sm text-stone-500 font-light mt-2">
+                    {progress < 30 ? "正在理解动物和地标..." : 
+                     progress < 60 ? "AI正在构思拍照角度..." : 
+                     progress < 90 ? "正在调整光影效果..." : "即将完成拍摄..."}
+                  </p>
                 </div>
               )}
 
