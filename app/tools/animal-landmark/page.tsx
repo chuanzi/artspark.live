@@ -8,18 +8,7 @@ import Image from "next/image"
 import { generateAnimalLandmarkPhoto } from "@/lib/animal-landmark-api"
 import { animalTypes, landmarks, getBgColorClass, getSelectedColorClass, type AnimalType, type LandmarkType } from "@/lib/animal-landmark-data"
 import { getNextTool } from "@/lib/tools-config"
-
-// 推荐动物地标组合 - 修正为与实际数据完全匹配
-const recommendedCombinations = [
-  { animal: "熊猫", landmark: "万里长城", description: "憨态可掬的熊猫在万里长城前的皇家范儿" },
-  { animal: "企鹅", landmark: "自由女神像", description: "优雅的企鹅与自由女神的经典邂逅" },
-  { animal: "狮子", landmark: "悉尼歌剧院", description: "威严狮王在悉尼歌剧院前的霸气pose" },
-  { animal: "大象", landmark: "泰姬陵", description: "温柔大象与印度古迹的神秘邂逅" },
-  { animal: "狮子", landmark: "埃菲尔铁塔", description: "威严狮王在浪漫巴黎的意外柔情" },
-  { animal: "小熊", landmark: "大本钟", description: "憨厚小熊与英伦风情的温馨碰撞" },
-  { animal: "狐狸", landmark: "富士山", description: "灵动狐狸在富士山下的优雅身姿" },
-  { animal: "兔子", landmark: "伦敦塔桥", description: "可爱兔子在伦敦塔桥前的甜美合影" }
-]
+import { generateAnimalLandmarkCombinations, type AnimalLandmarkCombination } from "@/lib/promptmaker-utils"
 
 // 示例作品缩略图
 const exampleThumbnails = [
@@ -36,7 +25,7 @@ export default function AnimalLandmarkPage() {
   const [progress, setProgress] = useState<number>(0)
   const [generatedImages, setGeneratedImages] = useState<string[]>([])
   const [error, setError] = useState<string>("")
-  const [currentRecommendations, setCurrentRecommendations] = useState<typeof recommendedCombinations>([])
+  const [currentRecommendations, setCurrentRecommendations] = useState<AnimalLandmarkCombination[]>([])
   
   // 新增状态管理
   const [displayedAnimals, setDisplayedAnimals] = useState<AnimalType[]>([])
@@ -55,8 +44,20 @@ export default function AnimalLandmarkPage() {
 
   // 生成随机推荐组合（4个不重复）
   const generateRandomRecommendations = () => {
-    const shuffled = [...recommendedCombinations].sort(() => 0.5 - Math.random())
-    setCurrentRecommendations(shuffled.slice(0, 4))
+    try {
+      const newRecommendations = generateAnimalLandmarkCombinations(4)
+      setCurrentRecommendations(newRecommendations)
+    } catch (error) {
+      console.error('生成推荐组合失败:', error)
+      // 如果生成失败，使用备用的固定组合
+      const fallbackCombinations: AnimalLandmarkCombination[] = [
+        { animal: "熊猫", landmark: "万里长城", description: "憨态可掬的熊猫在万里长城前的皇家范儿", isGenerated: false },
+        { animal: "企鹅", landmark: "自由女神像", description: "优雅的企鹅与自由女神的经典邂逅", isGenerated: false },
+        { animal: "狮子", landmark: "悉尼歌剧院", description: "威严狮王在悉尼歌剧院前的霸气pose", isGenerated: false },
+        { animal: "大象", landmark: "泰姬陵", description: "温柔大象与印度古迹的神秘邂逅", isGenerated: false }
+      ]
+      setCurrentRecommendations(fallbackCombinations)
+    }
   }
 
   // 生成随机4个动物选项
@@ -108,42 +109,59 @@ export default function AnimalLandmarkPage() {
   }
 
   // 增强的应用推荐组合功能
-  const applyRecommendation = (recommendation: typeof recommendedCombinations[0]) => {
+  const applyRecommendation = (recommendation: AnimalLandmarkCombination) => {
     console.log('应用推荐组合:', recommendation)
     
-    // 优化匹配逻辑：支持displayName匹配
-    const animal = animalTypes.find(a => 
-      a.displayName === recommendation.animal || 
-      a.name === recommendation.animal ||
-      a.displayName.includes(recommendation.animal) ||
-      recommendation.animal.includes(a.displayName)
-    )
-    
-    const landmark = landmarks.find(l => 
-      l.displayName === recommendation.landmark || 
-      l.name === recommendation.landmark ||
-      l.displayName.includes(recommendation.landmark) ||
-      recommendation.landmark.includes(l.displayName)
-    )
-    
-    console.log('找到的动物:', animal)
-    console.log('找到的地标:', landmark)
-    
-    if (animal) {
-      setSelectedAnimal(animal)
-      setCustomAnimalKeyword("")
-      // 确保选中的动物在显示列表中
-      if (!displayedAnimals.find(a => a.id === animal.id)) {
-        setDisplayedAnimals(prev => [animal, ...prev.slice(0, 3)])
+    // 如果是生成的英文组合，需要特殊处理
+    if (recommendation.isGenerated) {
+      // 对于生成的组合，直接使用英文名称作为关键词
+      setCustomAnimalKeyword(recommendation.animal)
+      setCustomLandmarkKeyword(recommendation.landmark)
+      setSelectedAnimal(null)
+      setSelectedLandmark(null)
+    } else {
+      // 对于中文组合，使用原有的匹配逻辑
+      const animal = animalTypes.find(a => 
+        a.displayName === recommendation.animal || 
+        a.name === recommendation.animal ||
+        a.displayName.includes(recommendation.animal) ||
+        recommendation.animal.includes(a.displayName)
+      )
+      
+      const landmark = landmarks.find(l => 
+        l.displayName === recommendation.landmark || 
+        l.name === recommendation.landmark ||
+        l.displayName.includes(recommendation.landmark) ||
+        recommendation.landmark.includes(l.displayName)
+      )
+      
+      console.log('找到的动物:', animal)
+      console.log('找到的地标:', landmark)
+      
+      if (animal) {
+        setSelectedAnimal(animal)
+        setCustomAnimalKeyword("")
+        // 确保选中的动物在显示列表中
+        if (!displayedAnimals.find(a => a.id === animal.id)) {
+          setDisplayedAnimals(prev => [animal, ...prev.slice(0, 3)])
+        }
+      } else {
+        // 如果找不到匹配的动物，使用关键词
+        setCustomAnimalKeyword(recommendation.animal)
+        setSelectedAnimal(null)
       }
-    }
-    
-    if (landmark) {
-      setSelectedLandmark(landmark)
-      setCustomLandmarkKeyword("")
-      // 确保选中的地标在显示列表中
-      if (!displayedLandmarks.find(l => l.id === landmark.id)) {
-        setDisplayedLandmarks(prev => [landmark, ...prev.slice(0, 3)])
+      
+      if (landmark) {
+        setSelectedLandmark(landmark)
+        setCustomLandmarkKeyword("")
+        // 确保选中的地标在显示列表中
+        if (!displayedLandmarks.find(l => l.id === landmark.id)) {
+          setDisplayedLandmarks(prev => [landmark, ...prev.slice(0, 3)])
+        }
+      } else {
+        // 如果找不到匹配的地标，使用关键词
+        setCustomLandmarkKeyword(recommendation.landmark)
+        setSelectedLandmark(null)
       }
     }
     

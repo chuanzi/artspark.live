@@ -122,6 +122,9 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      promptmaker:
+        specifier: ^1.2.0
+        version: 1.2.0
       react:
         specifier: ^19
         version: 19.1.0
@@ -1582,6 +1585,10 @@ packages:
   postcss@8.5.4:
     resolution: {integrity: sha512-QSa9EBe+uwlGTFmHsPKokv3B/oEMQZxfqW0QqNCyhpa6mB1afzulwn8hihglqAb2pOw+BJgNlmXQ8la2VeHB7w==}
     engines: {node: ^10 || ^12 || >=14}
+
+  promptmaker@1.2.0:
+    resolution: {integrity: sha512-qsWLYYyfiQsHWTZ7hyBZCScTQhzd75LSzb9Qw1wi5TOQEio03y7Hmg/yea+0fS7LUVSRCgl8TliRR2uA/AWgxw==}
+    hasBin: true
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -3218,6 +3225,10 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  promptmaker@1.2.0:
+    dependencies:
+      lodash: 4.17.21
 
   prop-types@15.8.1:
     dependencies:

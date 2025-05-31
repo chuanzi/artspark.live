@@ -8,30 +8,7 @@ import { ArrowLeft, RefreshCw, AlertCircle, Upload, X, Download, Share2, ArrowRi
 import Image from "next/image"
 import { generatePortrait, type GRSAIResponse } from "@/lib/api-client"
 import { getNextTool } from "@/lib/tools-config"
-
-// 提示词示例（扩展池）
-const allExamplePrompts = [
-  "Harry Potter",
-  "Elon Musk", 
-  "Donald Trump",
-  "Albert Einstein",
-  "Leonardo da Vinci",
-  "Marilyn Monroe",
-  "young businessman in suit",
-  "elderly wise woman",
-  "mysterious hooded figure",
-  "elegant Victorian lady",
-  "rugged cowboy",
-  "wise old professor",
-  "mysterious ninja",
-  "graceful ballerina", 
-  "confident CEO",
-  "artistic musician",
-  "brave firefighter",
-  "kind grandmother",
-  "rebellious teenager",
-  "sophisticated gentleman"
-]
+import { generatePortraitInspiration, type PortraitPrompt } from "@/lib/promptmaker-utils"
 
 // 示例作品缩略图
 const exampleThumbnails = [
@@ -42,12 +19,15 @@ const exampleThumbnails = [
 ]
 
 export default function PortraitToolPage() {
+  // 功能开关：控制参考图上传功能显示
+  const ENABLE_REFERENCE_IMAGE = false
+  
   const [characterDescription, setCharacterDescription] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState<number>(0)
   const [generatedImages, setGeneratedImages] = useState<string[]>([])
   const [error, setError] = useState<string>("")
-  const [currentInspiration, setCurrentInspiration] = useState<string[]>([])
+  const [currentInspiration, setCurrentInspiration] = useState<PortraitPrompt[]>([])
   const [aspectRatio, setAspectRatio] = useState<string>("auto")
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
 
@@ -66,11 +46,26 @@ export default function PortraitToolPage() {
 
   // 生成随机灵感（6个不重复）
   const generateRandomInspiration = () => {
-    const shuffled = [...allExamplePrompts].sort(() => 0.5 - Math.random())
-    setCurrentInspiration(shuffled.slice(0, 6))
+    try {
+      const newInspiration = generatePortraitInspiration(6)
+      setCurrentInspiration(newInspiration)
+    } catch (error) {
+      console.error('生成灵感提示失败:', error)
+      // 如果生成失败，使用备用的固定提示
+      const fallbackPrompts: PortraitPrompt[] = [
+        { text: "神秘的蒙面侠客", isEnglish: false },
+        { text: "优雅的古典舞者", isEnglish: false },
+        { text: "睿智的老学者", isEnglish: false },
+        { text: "勇敢的女战士", isEnglish: false },
+        { text: "温柔的母亲", isEnglish: false },
+        { text: "叛逆的摇滚歌手", isEnglish: false }
+      ]
+      setCurrentInspiration(fallbackPrompts)
+    }
   }
 
   const handleGenerate = async () => {
+    // 验证逻辑：只检查文字描述
     if (!characterDescription.trim()) {
       setError("请输入人物描述")
       return
@@ -110,8 +105,8 @@ export default function PortraitToolPage() {
     handleGenerate()
   }
 
-  const handleExampleClick = (example: string) => {
-    setCharacterDescription(example)
+  const handleExampleClick = (prompt: PortraitPrompt) => {
+    setCharacterDescription(prompt.text)
     setError("")
   }
 
@@ -470,68 +465,70 @@ export default function PortraitToolPage() {
               </div>
               
               <div className="grid grid-cols-2 gap-3">
-                {currentInspiration.map((example, index) => (
+                {currentInspiration.map((prompt, index) => (
                   <button
                     key={index}
                     className="p-3 text-left bg-white/40 border border-stone-200/50 rounded-xl hover:bg-white/60 hover:border-stone-300/50 transition-all duration-300 text-sm font-light text-stone-700"
-                    onClick={() => handleExampleClick(example)}
+                    onClick={() => handleExampleClick(prompt)}
                   >
-                    {example}
+                    {prompt.text}
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Reference Image Upload */}
-            <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-3xl p-8 shadow-sm">
-              <h3 className="text-lg font-light text-stone-700 mb-6 flex items-center gap-3 tracking-wide">
-                <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm">🖼️</span>
-                </div>
-                上传参考图（可选）
-              </h3>
-              
-              {referenceImage ? (
-                <div className="space-y-4">
-                  <div className="relative inline-block">
-                    <Image
-                      src={referenceImage}
-                      alt="参考图"
-                      width={200}
-                      height={200}
-                      className="w-32 h-32 object-cover rounded-xl border border-stone-200/50"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={removeReferenceImage}
-                      className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-red-100 border-red-200 hover:bg-red-200 p-0"
-                    >
-                      <X className="w-4 h-4 text-red-600" />
-                    </Button>
+            {ENABLE_REFERENCE_IMAGE && (
+              <div className="bg-white/60 backdrop-blur-sm border border-stone-200/50 rounded-3xl p-8 shadow-sm">
+                <h3 className="text-lg font-light text-stone-700 mb-6 flex items-center gap-3 tracking-wide">
+                  <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm">🖼️</span>
                   </div>
-                  <p className="text-sm text-stone-500 font-light">
-                    参考图已上传，将作为生成参考
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <label className="block">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="sr-only"
-                    />
-                    <div className="border-2 border-dashed border-stone-300/50 rounded-xl p-8 text-center hover:border-stone-400/50 hover:bg-stone-50/30 transition-all duration-300 cursor-pointer">
-                      <Upload className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-                      <p className="text-stone-600 font-light mb-1">点击上传参考图</p>
-                      <p className="text-sm text-stone-500 font-light">支持 JPG、PNG 格式</p>
+                  上传参考图（可选）
+                </h3>
+                
+                {referenceImage ? (
+                  <div className="space-y-4">
+                    <div className="relative inline-block">
+                      <Image
+                        src={referenceImage}
+                        alt="参考图"
+                        width={200}
+                        height={200}
+                        className="w-32 h-32 object-cover rounded-xl border border-stone-200/50"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={removeReferenceImage}
+                        className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-red-100 border-red-200 hover:bg-red-200 p-0"
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </Button>
                     </div>
-                  </label>
-                </div>
-              )}
-            </div>
+                    <p className="text-sm text-stone-500 font-light">
+                      参考图已上传，将作为生成参考
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <label className="block">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="sr-only"
+                      />
+                      <div className="border-2 border-dashed border-stone-300/50 rounded-xl p-8 text-center hover:border-stone-400/50 hover:bg-stone-50/30 transition-all duration-300 cursor-pointer">
+                        <Upload className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+                        <p className="text-stone-600 font-light mb-1">点击上传参考图</p>
+                        <p className="text-sm text-stone-500 font-light">支持 JPG、PNG 格式</p>
+                      </div>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Generate Button */}
             <div className="text-center space-y-4">

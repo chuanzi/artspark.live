@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const PROMPT_TEMPLATE = `Create a high-resolution black-and-white portrait artwork in an editorial and artistic photography style. 
+// 备份原有模板（注释保留）
+/* 原有英文模板备份：
+const OLD_PROMPT_TEMPLATE = `Create a high-resolution black-and-white portrait artwork in an editorial and artistic photography style. 
 
 The background features a soft gradient, transitioning from medium gray to nearly pure white, evoking a sense of depth and serene atmosphere. Delicate film grain texture adds a tactile, analog-like softness to the image, reminiscent of classic monochrome photography.  
 On the right side of the frame, a blurred yet striking visage of 
@@ -12,6 +14,25 @@ emerges subtly from the shadows—not posed traditionally, but as if captured in
 A gentle directional light, softly diffused, grazes the contours of his cheek or catches a glint in his eye—this is the emotional core of the image. The rest of the composition is dominated by generous negative space, intentionally minimal to allow the image to breathe. There are no words, no logos—only the interplay of light, shadow, and emotion.  
 
 The overall mood is abstract yet deeply human, like a fleeting glance or a half-remembered dream: intimate, timeless, and hauntingly beautiful.`
+*/
+
+// 新的中英文混合提示词模板
+const PROMPT_TEMPLATE = `Create a high-resolution black-and-white portrait artwork in an editorial and artistic photography style. 
+
+The background features a soft gradient, transitioning from medium gray to nearly pure white, evoking a sense of depth and serene atmosphere. Delicate film grain texture adds a tactile, analog-like softness to the image, reminiscent of classic monochrome photography.  
+On the right side of the frame, a blurred yet striking visage of 
+
+{CHARACTER_DESCRIPTION} 
+
+emerges subtly from the shadows—not posed traditionally, but as if captured in a fleeting moment of thought or breath. Only fragments of the face are revealed: perhaps an eye, a cheekbone, and the curve of lips, evoking mystery, intimacy, and elegance. His/Her/Its features are refined and profound, radiating a melancholic, poetic beauty without artifice.  
+
+A gentle directional light, softly diffused, grazes the contours of the cheek or catches a glint in the eye—this is the emotional core of the image. The rest of the composition is dominated by generous negative space, intentionally minimal to allow the image to breathe. There are no words, no logos—only the interplay of light, shadow, and emotion.  
+
+The overall mood is abstract yet deeply human, like a fleeting glance or a half-remembered dream: intimate, timeless, and hauntingly beautiful.
+
+如果有参考图，请使用参考图的人物形象作为照片的人物形象。这时，照片中人物数量根据情况而定。
+1、如果，没有具体人物描述，只有参考图，最后输出的照片，是参考图的人物形象的照片。
+2、如果，有具体人物描述，且有参考图，最后输出的就是包含两个人物的照片。`
 
 // API地址配置 - 海外优先，国内备用
 const API_ENDPOINTS = [
@@ -104,25 +125,49 @@ async function tryApiEndpoints(requestBody: any, apiKey: string): Promise<Respon
 
 export async function POST(request: NextRequest) {
   try {
-    const { characterDescription } = await request.json()
+    const { characterDescription, referenceImage } = await request.json()
     
-    if (!characterDescription || typeof characterDescription !== 'string') {
+    // 修复参数验证：允许在有参考图时描述为空
+    if ((!characterDescription || typeof characterDescription !== 'string') && !referenceImage) {
       return NextResponse.json(
-        { error: '请提供有效的人物描述' },
+        { error: '请提供人物描述或上传参考图' },
         { status: 400 }
       )
     }
 
+    // 智能提示词构建逻辑
+    const buildSmartPrompt = (description: string, hasReferenceImage: boolean): string => {
+      const trimmedDescription = description ? description.trim() : ''
+      
+      // 场景1：{}中没有具体人物描述，只有参考图，照片中只有一个人物（参考图的人物形象）
+      if (!trimmedDescription && hasReferenceImage) {
+        return PROMPT_TEMPLATE.replace('{CHARACTER_DESCRIPTION}', 'the person from the reference image')
+      }
+      
+      // 场景2：{}中有具体人物描述，且有参考图，输出包含两个人物的照片
+      if (trimmedDescription && hasReferenceImage) {
+        return PROMPT_TEMPLATE.replace('{CHARACTER_DESCRIPTION}', `${trimmedDescription} and the person from the reference image, creating a composition with two figures`)
+      }
+      
+      // 场景3：标准单人物场景（有描述，无参考图或只有描述）
+      return PROMPT_TEMPLATE.replace('{CHARACTER_DESCRIPTION}', trimmedDescription)
+    }
+
     // 构建完整的提示词
-    const prompt = PROMPT_TEMPLATE.replace('{CHARACTER_DESCRIPTION}', characterDescription.trim())
+    const prompt = buildSmartPrompt(characterDescription || '', !!referenceImage)
     
-    // 构建请求体
-    const requestBody = {
+    // 构建请求体，如果有参考图则添加到请求中
+    const requestBody: any = {
       model: "sora-image",
       prompt: prompt,
       size: "1:1",
       variants: 1,
       shutProgress: false
+    }
+
+    // 如果有参考图，添加到请求体中
+    if (referenceImage) {
+      requestBody.image = referenceImage
     }
 
     // 获取环境变量
