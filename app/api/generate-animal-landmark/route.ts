@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const PROMPT_TEMPLATE = `Three {ANIMAL_TYPE} taking a close-up selfie in front of the iconic {LANDMARK}, each with different expressions, captured during golden hour with cinematic lighting. The animals are close to the camera, heads touching, mimicking a selfie pose, displaying expressions of joy, surprise, and calm. The background showcases the complete architectural details of the {LANDMARK}, with soft lighting and a warm atmosphere. Shot in a photographic, realistic-cartoon style, highly detailed, with a 1:1 aspect ratio.`
 
-// API地址配置 - 国内直连优先，海外备用
+// API地址配置 - 海外优先，国内备用
 const API_ENDPOINTS = [
-  'http://grsai.dakka.com.cn/v1/draw/completions',  // 国内直连
-  'https://api.grsai.com/v1/draw/completions'       // 海外地址
+  'https://api.grsai.com/v1/draw/completions',       // 海外地址
+  'https://grsai.dakka.com.cn/v1/draw/completions'   // 国内备用
 ]
 
 // 统一超时配置
