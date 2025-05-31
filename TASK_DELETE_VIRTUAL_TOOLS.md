@@ -120,7 +120,7 @@
 **理由**: 扩展ToolConfig接口以支持页面组件需要的所有字段，删除虚拟工具配置，保持统一的工具配置管理
 **详细变更**:
 - 扩展ToolConfig接口，添加tags、keywords、difficulty、time、popularity、color、comingSoon等字段
-- 为现有工具（portrait、animal-landmark、treasure-map）补充完整的配置信息
+- 为现有工具（portrait、animal-landmark）补充完整的配置信息
 - 删除half-illustration和neo-impressionism的配置项
 - 保持getRandomTool、getToolById、getNextTool函数的功能完整性
 
@@ -178,7 +178,7 @@
   * 步骤: 1-4. 扩展接口并删除虚拟工具配置
   * 修改内容: 
     - 扩展lib/tools-config.ts的ToolConfig接口，添加tags、keywords、difficulty、time、popularity、color、comingSoon字段
-    - 为现有三个工具（portrait、animal-landmark、treasure-map）补充完整配置信息
+    - 为现有两个工具（portrait、animal-landmark）补充完整配置信息
     - 从toolsConfig数组中删除half-illustration和neo-impressionism配置项
   * 变更摘要: 完成工具配置文件的重构和虚拟工具删除
   * 原因: 执行计划步骤1-4
@@ -267,7 +267,7 @@
 ### 4. 项目完整性验证
 - ✅ 构建测试: npm run build 成功通过
 - ✅ 开发服务器: 所有页面(/, /wander, /search)正常运行
-- ✅ 工具循环逻辑: portrait→animal-landmark→treasure-map→portrait 正常工作
+- ✅ 工具循环逻辑: portrait→animal-landmark→portrait 正常工作
 
 ### 5. 技术债务解决验证
 - ✅ 配置重复问题: 已解决，统一使用lib/tools-config.ts

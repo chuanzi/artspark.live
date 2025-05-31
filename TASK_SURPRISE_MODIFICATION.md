@@ -22,7 +22,7 @@ Associated Protocol: RIPER-5 + Multidimensional + Agent Protocol
 # Analysis (Populated by RESEARCH mode)
 - 项目使用 Next.js 14+ App Router 架构
 - 现有 Surprise Me 功能：点击后跳转到 /surprise 页面，显示加载动画3秒后自动跳转到随机工具
-- 工具列表：portrait, animal-landmark, treasure-map
+- 工具列表：portrait, animal-landmark
 - 现有设计风格：简洁、现代、使用 stone 和 amber 色调
 - 已有示例图片：public/images/portrait-example.png
 
@@ -106,7 +106,7 @@ Associated Protocol: RIPER-5 + Multidimensional + Agent Protocol
 * 2024-12-19 16:20
   * Step: 6. Portrait页面4项功能修复和优化
   * Modifications: 
-    - lib/tools-config.ts：添加getNextTool函数，实现工具循环逻辑（portrait→animal-landmark→treasure-map→portrait）
+    - lib/tools-config.ts：添加getNextTool函数，实现工具循环逻辑（portrait→animal-landmark→portrait）
     - app/tools/portrait/page.tsx：恢复header中的✨和🎨图标，与其他页面保持一致
     - 添加右上角"试试下一个工具 →"按钮，对称布局，点击跳转到下一个工具
     - 重写downloadImage函数：使用canvas方案解决CORS问题，imageUrlToCanvas→canvasToBlob→download，添加fallback机制

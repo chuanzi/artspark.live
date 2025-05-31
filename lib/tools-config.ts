@@ -42,20 +42,6 @@ export const toolsConfig: ToolConfig[] = [
     time: "45秒",
     popularity: 4.9,
     color: "amber"
-  },
-  {
-    id: "treasure-map",
-    name: "宝藏地图生成",
-    description: "创造神秘的古代宝藏地图",
-    exampleImage: "/images/tools/treasure-map-example.jpg",
-    path: "/tools/treasure-map", 
-    emoji: "🗺️",
-    tags: ["地图", "古代", "冒险"],
-    keywords: ["地图", "古代", "冒险", "宝藏", "探险", "神秘"],
-    difficulty: "中等",
-    time: "60秒",
-    popularity: 4.6,
-    color: "orange"
   }
 ]
 
@@ -70,9 +56,15 @@ export function getToolById(id: string): ToolConfig | undefined {
   return toolsConfig.find(tool => tool.id === id)
 }
 
-// 获取下一个工具（循环逻辑）
+// 获取下一个工具（循环）
 export function getNextTool(currentToolId: string): ToolConfig {
-  const currentIndex = toolsConfig.findIndex(tool => tool.id === currentToolId)
-  const nextIndex = (currentIndex + 1) % toolsConfig.length
-  return toolsConfig[nextIndex]
+  if (currentToolId === "portrait") {
+    return toolsConfig.find(tool => tool.id === "animal-landmark")!
+  }
+  if (currentToolId === "animal-landmark") {
+    return toolsConfig.find(tool => tool.id === "portrait")!
+  }
+  
+  // 默认返回第一个工具
+  return toolsConfig[0]
 } 
